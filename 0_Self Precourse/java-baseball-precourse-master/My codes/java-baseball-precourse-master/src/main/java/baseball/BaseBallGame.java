@@ -1,90 +1,102 @@
 package baseball;
 
 import java.util.Scanner;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import utils.RandomUtils;
 
 public class BaseballGame {
 	private Scanner scanner;
-	private int[] answer = Constants.DEFAULT_ANSWER;
-	private int strikes = 0;
-	private int balls = 0;
-	private boolean isContinue = true;
+	private int[] answer;
+	private int isContinue;
 	
+	// 생성자로 초기화
     public BaseballGame(Scanner scanner) {
     	this.scanner = scanner;
+    	this.answer = Constants.DEFAULT_ANSWER;
+    	this.isContinue = 0;
     }
     
-    private int[] generateAnswer() {
-    	int[] answer = Constants.DEFAULT_ANSWER;
+    private void generateAnswer() {
     	boolean[] usedNumbers = new boolean[Constants.MAX_DIGIT_VALUE + 1];
     	for (int i=0; i<3; i++) {
     		int number = RandomUtils.nextInt(Constants.MIN_DIGIT_VALUE, Constants.MAX_DIGIT_VALUE);
-    		
     		if (!usedNumbers[number]) {
     			usedNumbers[number] = true;
-    			answer[i] = number;
+    			this.answer[i] = number;
     		} else {
     			i--;
     		}
     	}
-    	return answer;
     }
     
-    private boolean continueOrStop() {
-    	
+    private int countStrikes(int[] userInput) {
+    	int strikes = 0;
+    	for (int i=0; i<3; i++) {
+    		if(userInput[i] == answer[i]) {
+    			strikes++;
+    		}
+    	}
+    	return strikes;
     }
     
-    private int countStrikes() {
-    	
+    private int countBalls(int[] userInput) {
+    	int balls = 0;
+    	for (int i=0; i<3; i++) {
+    		int userInputDigit = userInput[i];
+    		if (userInputDigit != answer[i] && Arrays.stream(answer).anyMatch(x -> x == userInputDigit)) {
+    			balls++;
+    		}
+    	}
+    	return balls;
     }
     
-    private int countBalls() {
-    	
+    private String currCountMessage(int strikes, int balls) {
+    	String message = "";
+    	if (strikes != 0) {
+    		message += Integer.toString(strikes) + "스트라이크";
+    	}
+    	if (message != "") {
+    		message += " ";
+    	}
+    	if (balls != 0) {
+    		message += Integer.toString(balls) + "볼";
+    	}
+    	return message;
     }
     
     public void start() {
     	// 첫 시작
     	System.out.println(Constants.GAME_START_MSG);
-    	this.answer = generateAnswer();
+    	generateAnswer();
     	
     	// 숫자입력
     	do {
 	    	System.out.print(Constants.INPUT_NUM_MSG);
-	    	int userAnswer = scanner.nextInt();
+	    	int[] userInput = Stream.of(String.valueOf(scanner.nextInt()).split("")).mapToInt(Integer::parseInt).toArray();
+	    	// 스트라이크 볼 판단
+	    	int userStrikes = countStrikes(userInput);
+	    	int userBalls = countBalls(userInput);
 	    	
-	    	int userStrikes = 0;
-	    	int userBalls = 0;
 	    	// 현재 맞춘 정보 출력
-	    	String currAnswerMessage = "";
-	    	if (userStrikes != 0) {
-	    		currAnswerMessage += Integer.toString(userStrikes) + "스트라이크";
-	    	}
-	    	if (currAnswerMessage != "") {
-	    		currAnswerMessage += " ";
-	    	}
-	    	if (userBalls != 0) {
-	    		currAnswerMessage += Integer.toString(userBalls) + "볼";
-	    	}
-	    	System.out.println(currAnswerMessage);
+	    	System.out.println(currCountMessage(userStrikes, userBalls));
 	    	
+	    	// 답 맞춘 경우 출력
 	    	if (userStrikes == 3) {
 	    		System.out.println(Constants.GAME_END_MSG);
+	    		// 계속 할지?
 	    		System.out.println(Constants.GAME_CONTINUE_MSG);
-	    		int isContinue = scanner.nextInt();
+	    		this.isContinue = scanner.nextInt();
 	    	}
-	    	boolean isContinue = continueOrStop();
-    	} while (isContinue);
+    	} while (this.isContinue == 0);
     	
-    	// 답 맞춘 후 출력
-    	System.out.println(Constants.GAME_END_MSG);
-    	
-    	// 계속 할지 입력 1이면 계속 2면 중지
-    	restart(scanner.nextInt());
+    	if (this.isContinue == 1) {
+    		this.isContinue = 0;
+    		start();
+    	}
+    	else if (this.isContinue == 2) {
+    		System.out.println(Constants.GAME_EXIT_MSG);
+    	}
     }
-    
-    private void restart(int nextInt) {
-		// TODO Auto-generated method stub
-		
-	}
 }
