@@ -1,11 +1,14 @@
 package subway;
 
 public class Constants {
-	public static final String SELECT_FUNCTION = "## 원하는 기능을 선택하세요.";
+	// 공통
+	public static final String SELECT_OPTION = "## 원하는 기능을 선택하세요.";
 	public static final String BACK_OPTION = "B. 돌아가기";
 	
 	public static final String INFO = "[INFO] ";
 	public static final String ERROR = "[ERROR] ";
+
+	public static final String[] ALLOWED_INPUT = {"1" ,"2", "3", "4", "B", "Q"};
 	
 	// 메인 화면
 	public static final String MAIN_TITLE ="## 메인 화면";
