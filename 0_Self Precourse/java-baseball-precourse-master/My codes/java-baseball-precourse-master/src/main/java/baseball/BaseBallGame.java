@@ -6,13 +6,13 @@ import java.util.stream.Stream;
 
 import utils.RandomUtils;
 
-public class BaseballGame {
+public class BaseBallGame {
 	private Scanner scanner;
 	private int[] answer;
 	private int isContinue;
 	
 	// 생성자로 초기화
-    public BaseballGame(Scanner scanner) {
+    public BaseBallGame(Scanner scanner) {
     	this.scanner = scanner;
     	this.answer = Constants.DEFAULT_ANSWER;
     	this.isContinue = 0;
